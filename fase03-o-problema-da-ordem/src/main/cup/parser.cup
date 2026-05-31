@@ -1,101 +1,69 @@
 package br.maua.cic303;
 
-import java_cup.runtime.Symbol;
+import java_cup.runtime.*;
 
 parser code {:
     public void syntax_error(Symbol cur_token) {
-        throw new RuntimeException("Erro sintático próximo de: " + cur_token);
+        throw new RuntimeException(
+            "Erro Sintatico na linha " + cur_token.left + ", coluna " + cur_token.right
+        );
     }
-
-    public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
-        throw new Exception("Erro sintático não recuperável próximo de: " + cur_token);
-    }
-:};
+:}
 
 terminal IF, THEN, ELSE, WHILE;
-terminal ID, NUM;
+terminal ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, SEMI;
+terminal PLUS, MINUS, TIMES, DIVIDE, MOD;
+terminal EQ, NEQ, LT, GT, LE, GE;
+terminal String ID;
+terminal Integer NUM;
 
-terminal ASSIGN;
-terminal SEMI;
+non terminal program, stmt_list, stmt;
+non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
+non terminal expr;
 
-terminal LPAREN, RPAREN;
-terminal LBRACE, RBRACE;
-
-terminal PLUS, MINUS;
-terminal TIMES, DIVIDE, MOD;
-
-terminal EQ, NEQ;
-terminal LT, LE;
-terminal GT, GE;
-
-non terminal programa;
-non terminal lista_comandos;
-non terminal comando;
-non terminal atribuicao;
-non terminal comando_if;
-non terminal comando_while;
-non terminal bloco;
-non terminal expressao;
-
-precedence nonassoc IFX;
-precedence nonassoc ELSE;
-
-precedence nonassoc EQ, NEQ, LT, LE, GT, GE;
+precedence left EQ, NEQ, LT, GT, LE, GE;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE, MOD;
-precedence right UMINUS;
 
-start with programa;
+start with program;
 
-programa ::=
-      lista_comandos
-    ;
+program ::= stmt_list ;
 
-lista_comandos ::=
-      lista_comandos comando
-    | comando
-    ;
+stmt_list ::= stmt_list stmt
+            | /* empty */
+            ;
 
-comando ::=
-      atribuicao
-    | comando_if
-    | comando_while
-    | bloco
-    | SEMI
-    ;
+stmt ::= assign_stmt
+       | if_stmt
+       | while_stmt
+       | block_stmt
+       | null_stmt
+       ;
 
-atribuicao ::=
-      ID ASSIGN expressao SEMI
-    ;
+assign_stmt ::= ID ASSIGN expr SEMI ;
 
-comando_if ::=
-      IF LPAREN expressao RPAREN THEN bloco %prec IFX
-    | IF LPAREN expressao RPAREN THEN bloco ELSE bloco
-    ;
+if_stmt ::= IF LPAREN expr RPAREN THEN block_stmt
+          | IF LPAREN expr RPAREN THEN block_stmt ELSE block_stmt
+          ;
 
-comando_while ::=
-      WHILE LPAREN expressao RPAREN bloco
-    ;
+while_stmt ::= WHILE LPAREN expr RPAREN block_stmt ;
 
-bloco ::=
-      LBRACE lista_comandos RBRACE
-    | LBRACE RBRACE
-    ;
+block_stmt ::= LBRACE stmt_list RBRACE ;
 
-expressao ::=
-      expressao PLUS expressao
-    | expressao MINUS expressao
-    | expressao TIMES expressao
-    | expressao DIVIDE expressao
-    | expressao MOD expressao
-    | expressao EQ expressao
-    | expressao NEQ expressao
-    | expressao LT expressao
-    | expressao LE expressao
-    | expressao GT expressao
-    | expressao GE expressao
-    | MINUS expressao %prec UMINUS
-    | LPAREN expressao RPAREN
-    | ID
-    | NUM
-    ;
+null_stmt ::= SEMI ;
+
+expr ::= expr PLUS expr
+       | expr MINUS expr
+       | expr TIMES expr
+       | expr DIVIDE expr
+       | expr MOD expr
+       | expr EQ expr
+       | expr NEQ expr
+       | expr LT expr
+       | expr GT expr
+       | expr LE expr
+       | expr GE expr
+       | LPAREN expr RPAREN
+       | NUM
+       | ID
+       ;
