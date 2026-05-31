@@ -12,21 +12,35 @@ parser code {:
     }
 :};
 
-/* Terminais vindos do Lexer */
-terminal IF, THEN, ELSE, WHILE;
-terminal ID, NUM;
+/* Terminais */
+terminal IF;
+terminal THEN;
+terminal ELSE;
+terminal WHILE;
+
+terminal ID;
+terminal NUM;
 
 terminal ASSIGN;
 terminal SEMI;
-terminal LPAREN, RPAREN;
-terminal LBRACE, RBRACE;
 
-terminal PLUS, MINUS;
-terminal TIMES, DIVIDE, MOD;
+terminal LPAREN;
+terminal RPAREN;
+terminal LBRACE;
+terminal RBRACE;
 
-terminal EQ, NEQ;
-terminal LT, LE;
-terminal GT, GE;
+terminal PLUS;
+terminal MINUS;
+terminal TIMES;
+terminal DIVIDE;
+terminal MOD;
+
+terminal EQ;
+terminal NEQ;
+terminal LT;
+terminal LE;
+terminal GT;
+terminal GE;
 
 /* Não-terminais */
 non terminal programa;
@@ -47,7 +61,7 @@ precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE, MOD;
 precedence right UMINUS;
 
-/* Símbolo inicial */
+/* Início */
 start with programa;
 
 /* Gramática */
@@ -93,16 +107,13 @@ expressao ::=
     | expressao TIMES expressao
     | expressao DIVIDE expressao
     | expressao MOD expressao
-
     | expressao EQ expressao
     | expressao NEQ expressao
     | expressao LT expressao
     | expressao LE expressao
     | expressao GT expressao
     | expressao GE expressao
-
     | MINUS expressao %prec UMINUS
-
     | LPAREN expressao RPAREN
     | ID
     | NUM
