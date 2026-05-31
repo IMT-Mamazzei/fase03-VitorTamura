@@ -1,61 +1,109 @@
 package br.maua.cic303;
 
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
 parser code {:
-    // Método chamado pelo CUP quando encontra um erro sintático
     public void syntax_error(Symbol cur_token) {
-        throw new RuntimeException("Erro Sintático na linha " + cur_token.left + ", coluna " + cur_token.right);
+        System.err.println("Erro sintático próximo de: " + cur_token);
     }
-:}
 
-/* ========================================================================= */
-/* DECLARAÇÃO DOS TOKENS (TERMINAIS)                                         */
-/* O CUP usará isso para gerar o sym.java que o seu Lexer precisa            */
-/* ========================================================================= */
+    public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
+        throw new Exception("Erro sintático não recuperável próximo de: " + cur_token);
+    }
+:};
 
+/* Terminais vindos do Lexer */
 terminal IF, THEN, ELSE, WHILE;
-terminal ASSIGN, LPAREN, RPAREN, LBRACE, RBRACE, SEMI;
-terminal String ID, NUMBER;
-terminal String ADD_OP, MUL_OP, REL_OP;
+terminal ID, NUM;
 
-/* ========================================================================= */
-/* DECLARAÇÃO DOS NÃO-TERMINAIS (VARIÁVEIS DA GRAMÁTICA)                     */
-/* ========================================================================= */
+terminal ASSIGN;
+terminal SEMI;
+terminal LPAREN, RPAREN;
+terminal LBRACE, RBRACE;
 
-non terminal program, stmt_list, stmt;
-non terminal assign_stmt, if_stmt, while_stmt, block_stmt, null_stmt;
-non terminal expr;
+terminal PLUS, MINUS;
+terminal TIMES, DIVIDE, MOD;
 
-/* ========================================================================= */
-/* PRECEDÊNCIA E ASSOCIATIVIDADE                                             */
-/* ========================================================================= */
+terminal EQ, NEQ;
+terminal LT, LE;
+terminal GT, GE;
 
-/* TODO 1: Declare a precedência para resolver a ambiguidade matemática. */
-/* Dica: O operador mais embaixo tem a MAIOR precedência!                */
-/* precedence left ... ; */
+/* Não-terminais */
+non terminal programa;
+non terminal lista_comandos;
+non terminal comando;
+non terminal atribuicao;
+non terminal comando_if;
+non terminal comando_while;
+non terminal bloco;
+non terminal expressao;
 
-/* ========================================================================= */
-/* REGRAS DA GRAMÁTICA                                                       */
-/* ========================================================================= */
+/* Precedência */
+precedence nonassoc IFX;
+precedence nonassoc ELSE;
 
-start with program;
+precedence nonassoc EQ, NEQ, LT, LE, GT, GE;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE, MOD;
+precedence right UMINUS;
 
-/* TODO 2: Como definir um programa que é uma lista de comandos? */
-program ::= /* Escreva a regra aqui */ ;
+/* Símbolo inicial */
+start with programa;
 
-/* TODO 3: Como definir uma lista recursiva no BNF? */
-stmt_list ::= /* Escreva a regra aqui */ ;
+/* Gramática */
 
-/* TODO 4: Declaração dos comandos (assign, if, while, block, null) */
-stmt ::= /* Escreva a regra aqui */ ;
+programa ::=
+      lista_comandos
+    ;
 
-assign_stmt ::= ID ASSIGN expr SEMI ;
+lista_comandos ::=
+      lista_comandos comando
+    | comando
+    ;
 
-/* TODO 5: Implemente o IF, WHILE, BLOCO e NULL */
-/* if_stmt ::= ... */
+comando ::=
+      atribuicao
+    | comando_if
+    | comando_while
+    | bloco
+    | SEMI
+    ;
 
-/* TODO 6: Regras de expressões (aritmética, relacional, etc) */
-expr ::= expr ADD_OP expr
-       /* Adicione MUL_OP, REL_OP, parenteses, NUMBER e ID */
-       ;
+atribuicao ::=
+      ID ASSIGN expressao SEMI
+    ;
+
+comando_if ::=
+      IF LPAREN expressao RPAREN THEN bloco %prec IFX
+    | IF LPAREN expressao RPAREN THEN bloco ELSE bloco
+    ;
+
+comando_while ::=
+      WHILE LPAREN expressao RPAREN bloco
+    ;
+
+bloco ::=
+      LBRACE lista_comandos RBRACE
+    | LBRACE RBRACE
+    ;
+
+expressao ::=
+      expressao PLUS expressao
+    | expressao MINUS expressao
+    | expressao TIMES expressao
+    | expressao DIVIDE expressao
+    | expressao MOD expressao
+
+    | expressao EQ expressao
+    | expressao NEQ expressao
+    | expressao LT expressao
+    | expressao LE expressao
+    | expressao GT expressao
+    | expressao GE expressao
+
+    | MINUS expressao %prec UMINUS
+
+    | LPAREN expressao RPAREN
+    | ID
+    | NUM
+    ;
