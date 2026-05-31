@@ -38,7 +38,7 @@ ESPACO = [ \t\r\n\f]+
 "else"          { return symbol(sym.ELSE); }
 "while"         { return symbol(sym.WHILE); }
 
-/* Operadores relacionais - colocar os de 2 caracteres antes */
+/* Operadores relacionais */
 "=="            { return symbol(sym.EQ); }
 "!="            { return symbol(sym.NEQ); }
 "<="            { return symbol(sym.LE); }
@@ -67,5 +67,5 @@ ESPACO = [ \t\r\n\f]+
 {NUM}           { return symbol(sym.NUM, Integer.parseInt(yytext())); }
 {ID}            { return symbol(sym.ID, yytext()); }
 
-/* Caractere inválido */
+/* Qualquer outro caractere é inválido */
 .               { throw new RuntimeException("Caractere inválido: " + yytext()); }
