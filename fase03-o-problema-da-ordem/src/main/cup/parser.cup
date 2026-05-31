@@ -4,7 +4,7 @@ import java_cup.runtime.Symbol;
 
 parser code {:
     public void syntax_error(Symbol cur_token) {
-        System.err.println("Erro sintático próximo de: " + cur_token);
+        throw new RuntimeException("Erro sintático próximo de: " + cur_token);
     }
 
     public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
@@ -12,37 +12,22 @@ parser code {:
     }
 :};
 
-/* Terminais */
-terminal IF;
-terminal THEN;
-terminal ELSE;
-terminal WHILE;
-
-terminal ID;
-terminal NUM;
+terminal IF, THEN, ELSE, WHILE;
+terminal ID, NUM;
 
 terminal ASSIGN;
 terminal SEMI;
 
-terminal LPAREN;
-terminal RPAREN;
-terminal LBRACE;
-terminal RBRACE;
+terminal LPAREN, RPAREN;
+terminal LBRACE, RBRACE;
 
-terminal PLUS;
-terminal MINUS;
-terminal TIMES;
-terminal DIVIDE;
-terminal MOD;
+terminal PLUS, MINUS;
+terminal TIMES, DIVIDE, MOD;
 
-terminal EQ;
-terminal NEQ;
-terminal LT;
-terminal LE;
-terminal GT;
-terminal GE;
+terminal EQ, NEQ;
+terminal LT, LE;
+terminal GT, GE;
 
-/* Não-terminais */
 non terminal programa;
 non terminal lista_comandos;
 non terminal comando;
@@ -52,7 +37,6 @@ non terminal comando_while;
 non terminal bloco;
 non terminal expressao;
 
-/* Precedência */
 precedence nonassoc IFX;
 precedence nonassoc ELSE;
 
@@ -61,10 +45,7 @@ precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE, MOD;
 precedence right UMINUS;
 
-/* Início */
 start with programa;
-
-/* Gramática */
 
 programa ::=
       lista_comandos
