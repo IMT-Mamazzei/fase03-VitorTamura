@@ -30,15 +30,13 @@ ESPACO = [ \t\r\n\f]+
 
 %%
 
-{ESPACO}        { /* ignora espaços */ }
+{ESPACO}        { }
 
-/* Palavras reservadas */
 "if"            { return symbol(sym.IF); }
 "then"          { return symbol(sym.THEN); }
 "else"          { return symbol(sym.ELSE); }
 "while"         { return symbol(sym.WHILE); }
 
-/* Operadores relacionais */
 "=="            { return symbol(sym.EQ); }
 "!="            { return symbol(sym.NEQ); }
 "<="            { return symbol(sym.LE); }
@@ -46,26 +44,21 @@ ESPACO = [ \t\r\n\f]+
 "<"             { return symbol(sym.LT); }
 ">"             { return symbol(sym.GT); }
 
-/* Atribuição */
 "="             { return symbol(sym.ASSIGN); }
 
-/* Operadores matemáticos */
 "+"             { return symbol(sym.PLUS); }
 "-"             { return symbol(sym.MINUS); }
 "*"             { return symbol(sym.TIMES); }
 "/"             { return symbol(sym.DIVIDE); }
 "%"             { return symbol(sym.MOD); }
 
-/* Símbolos */
 ";"             { return symbol(sym.SEMI); }
 "("             { return symbol(sym.LPAREN); }
 ")"             { return symbol(sym.RPAREN); }
 "{"             { return symbol(sym.LBRACE); }
 "}"             { return symbol(sym.RBRACE); }
 
-/* Identificadores e números */
-{NUM}           { return symbol(sym.NUM, Integer.parseInt(yytext())); }
+{NUM}           { return symbol(sym.NUM, Integer.valueOf(yytext())); }
 {ID}            { return symbol(sym.ID, yytext()); }
 
-/* Qualquer outro caractere é inválido */
 .               { throw new RuntimeException("Caractere inválido: " + yytext()); }
